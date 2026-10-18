@@ -4,13 +4,20 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    # cadmpeg itself, fetched as plain source (it has no flake of its own).
+    # Pin a revision with e.g. github:cadmpeg/cadmpeg/<commit> or update with
+    # `nix flake update cadmpeg-src`.
+    cadmpeg-src = {
+      url = "github:cadmpeg/cadmpeg";
+      flake = false;
+    };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, rust-overlay }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, cadmpeg-src }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -32,16 +39,16 @@
           rustc = rustToolchain;
         };
 
-        cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+        cargoToml = builtins.fromTOML (builtins.readFile "${cadmpeg-src}/Cargo.toml");
 
         cadmpeg = rustPlatform.buildRustPackage {
           pname = "cadmpeg";
           version = cargoToml.workspace.package.version;
 
-          src = pkgs.lib.cleanSource ./.;
+          src = cadmpeg-src;
 
           # Cargo.lock has no git dependencies, so no outputHashes are needed.
-          cargoLock.lockFile = ./Cargo.lock;
+          cargoLock.lockFile = "${cadmpeg-src}/Cargo.lock";
 
           # Build only the CLI (all codecs are on by default).
           cargoBuildFlags = [ "--package" "cadmpeg" ];

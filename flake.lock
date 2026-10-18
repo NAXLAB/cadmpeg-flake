@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "cadmpeg-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791787706,
+        "narHash": "sha256-ru3KBD1ZizCA+TXfbfHlzTQfZdpRUEIYYh3IPkMYb7U=",
+        "owner": "cadmpeg",
+        "repo": "cadmpeg",
+        "rev": "d76ec7b1b3f0e289a898c5cff6ed334c8644558c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cadmpeg",
+        "repo": "cadmpeg",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -36,6 +52,7 @@
     },
     "root": {
       "inputs": {
+        "cadmpeg-src": "cadmpeg-src",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
         "rust-overlay": "rust-overlay"
